@@ -1,22 +1,53 @@
 pipeline {
+
   agent any
 
   stages {
-    stage ('Build') {
+
+    stage('Checkout Source Code') {
       steps {
-        echo 'Building the Application...'
+        git 'https://github.com/damienmwene/Python-Project.git'
       }
     }
 
-    stage ('Test') {
+    stage('SonarQube Code Analysis') {
       steps {
-        echo 'Testing the Application...'
+        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+          sh """
+          sonar-scanner \
+            -Dsonar.projectKey=uptime_monitor \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
+            -Dsonar.token=${SONAR_TOKEN}
+          """
+        }
       }
     }
 
-    stage ('Package') {
+    stage('Quality Gate') {
       steps {
-        echo 'Packaging the Application...'
+        timeout(time: 1, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh "docker build -t ${IMAGE_NAME}:v2 ."
+      }
+    }
+
+    stage('Docker Push') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-creds',
+        )]) {
+          sh """
+          docker login -u --password-stdin
+          docker push ${IMAGE_NAME}:v2
+          """
+        }
       }
     }
   }
