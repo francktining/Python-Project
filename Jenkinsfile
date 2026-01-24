@@ -6,19 +6,17 @@ pipeline {
 
     stage('Checkout Source Code') {
       steps {
-        git 'https://github.com/damienmwene/Python-Project.git'
+        git 'https://github.com/francktining/Python-Project.git'
       }
     }
 
     stage('SonarQube Code Analysis') {
       steps {
-        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+        withCredentials([string(credentialsId: 'python-project', variable: 'SONAR_TOKEN')]) {
           sh """
           sonar-scanner \
-            -Dsonar.projectKey=uptime_monitor \
+            -Dsonar.projectKey=python-project \
             -Dsonar.sources=. \
-            -Dsonar.host.url=${SONAR_HOST_URL} \
-            -Dsonar.token=${SONAR_TOKEN}
           """
         }
       }
