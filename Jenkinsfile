@@ -10,13 +10,11 @@ pipeline {
     stage('SonarQube Code Analysis') {
       steps {
         withSonarQubeEnv('SonarQube') {
-          withCredentials([string(credentialsId: 'python-project', variable: 'SONAR_TOKEN')]) {
+          withEnv(["SCANNER_HOME=${tool 'sonar-scanner'}"]) {
             sh '''
-              sonar-scanner \
+              $SCANNER_HOME/usr/local/bin/sonar-scanner \
                 -Dsonar.projectKey=python-project \
                 -Dsonar.sources=. \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN
             '''
           }
         }
