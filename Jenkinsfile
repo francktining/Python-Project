@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+    sonarQubeScanner 'sonar-scanner'
+  }
+
   environment {
     IMAGE_NAME = "francktining/python-project"
   }
