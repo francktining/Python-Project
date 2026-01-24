@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  tools {
-    sonarScanner 'sonar-scanner'
-  }
-
   environment {
     IMAGE_NAME = "francktining/python-project"
   }
@@ -15,13 +11,13 @@ pipeline {
       steps {
         withSonarQubeEnv('SonarQube') {
           withCredentials([string(credentialsId: 'python-project', variable: 'SONAR_TOKEN')]) {
-            sh """
+            sh '''
               sonar-scanner \
                 -Dsonar.projectKey=python-project \
                 -Dsonar.sources=. \
                 -Dsonar.host.url=$SONAR_HOST_URL \
                 -Dsonar.login=$SONAR_TOKEN
-            """
+            '''
           }
         }
       }
@@ -48,10 +44,10 @@ pipeline {
           usernameVariable: 'DOCKER_USER',
           passwordVariable: 'DOCKER_PASS'
         )]) {
-          sh """
+          sh '''
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
             docker push ${IMAGE_NAME}:v2
-          """
+          '''
         }
       }
     }
