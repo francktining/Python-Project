@@ -10,12 +10,14 @@ pipeline {
     stage('SonarQube Code Analysis') {
       steps {
         withSonarQubeEnv('SonarQube') {
-          withEnv(["SCANNER_HOME=${tool 'sonar-scanner'}"]) {
-            sh '''
-              $SCANNER_HOME/bin/sonar-scanner \
+          script {
+            def scannerHome = tool 'sonar-scanner'
+            sh """
+              ${scannerHome}/bin/sonar-scanner \
                 -Dsonar.projectKey=python-project \
                 -Dsonar.sources=. \
-            '''
+                -Dsonar.host.url=http://localhost:9000
+            """
           }
         }
       }
@@ -23,7 +25,7 @@ pipeline {
 
     stage('Quality Gate') {
       steps {
-        timeout(time: 2, unit: 'MINUTES') {
+        timeout(time: 5, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
         }
       }
