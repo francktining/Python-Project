@@ -12,7 +12,7 @@ pipeline {
         withSonarQubeEnv('SonarQube') {
           withEnv(["SCANNER_HOME=${tool 'sonar-scanner'}"]) {
             sh '''
-              $SCANNER_HOME/usr/local/bin/sonar-scanner \
+              $SCANNER_HOME/bin/sonar-scanner \
                 -Dsonar.projectKey=python-project \
                 -Dsonar.sources=. \
             '''
