@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  environment {
-    IMAGE_NAME = "francktining/python-project"
-  }
-
   stages {
 
     stage('SonarQube Code Analysis') {
